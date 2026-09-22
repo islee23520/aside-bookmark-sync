@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Aside Bookmark Sync",
+  "version": "0.1.0",
+  "description": "로컬 동반 프로세스를 통한 북마크 양방향 동기화",
+  "minimum_chrome_version": "120",
+  "permissions": ["bookmarks", "storage", "alarms"],
+  "host_permissions": ["http://127.0.0.1:32145/*"],
+  "background": { "service_worker": "dist/service-worker.js", "type": "module" },
+  "action": { "default_popup": "popup.html", "default_title": "Aside Bookmark Sync" },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src http://127.0.0.1:32145"
+  }
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Aside Bookmark Sync</title>
+    <link rel="stylesheet" href="popup.css">
+    <script type="module" src="dist/popup.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">LOCAL ONLY · 127.0.0.1</p>
+        <h1>북마크 동기화</h1>
+        <p>Aside와 Edge를 같은 로컬 암호로 연결하세요.</p>
+      </header>
+      <section class="connection" aria-labelledby="connection-title">
+        <h2 id="connection-title">연결 상태</h2>
+        <p id="status" role="status" aria-live="polite" aria-atomic="true">상태 확인 중…</p>
+        <dl>
+          <div><dt>마지막 동기화</dt><dd id="last-sync">아직 없음</dd></div>
+          <div><dt>관리 항목</dt><dd id="count">0</dd></div>
+          <div><dt>서버 revision</dt><dd id="revision">0</dd></div>
+        </dl>
+        <p id="error" role="alert" aria-atomic="true" hidden></p>
+        <button id="sync" type="button" disabled>지금 동기화</button>
+      </section>
+      <form id="settings" aria-labelledby="settings-title">
+        <h2 id="settings-title">이 브라우저 설정</h2>
+        <label for="label">브라우저 이름</label>
+        <input id="label" name="label" type="text" maxlength="64" required
+          autocomplete="off" placeholder="예: Aside · 이 Mac">
+        <label for="password">로컬 암호</label>
+        <input id="password" name="password" type="password" maxlength="1024"
+          autocomplete="new-password" aria-describedby="password-help" required>
+        <p id="password-help" class="hint">두 브라우저에서 같은 암호를 입력하세요. 원문 암호는 저장하거나 전송하지 않습니다.</p>
+        <button id="save" type="submit">설정 저장 및 연결</button>
+        <p id="feedback" role="status" aria-live="polite" aria-atomic="true"></p>
+      </form>
+      <footer>
+        <p>변경 즉시 전송 · 30초 간격 수신 및 재시도</p>
+        <p>동반 프로세스가 실행 중이어야 합니다. 현재 통신 규격은 같은 경로의 중복 항목을 하나로 취급하며, 정렬 순서는 전파하지 않습니다.</p>
+      </footer>
+    </main>
+  </body>
+</html>

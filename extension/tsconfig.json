@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": [],
+    "lib": ["ESNext", "DOM"],
+    "noEmit": true
+  },
+  "include": ["./*.ts", "./*.d.ts"],
+  "exclude": ["./dist"]
+}

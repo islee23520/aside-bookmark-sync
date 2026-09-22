@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light dark;
+  font: 14px/1.6 system-ui, sans-serif;
+  color: CanvasText;
+  background: Canvas;
+  --space: 8px;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; inline-size: 360px; max-inline-size: 100vw; }
+main { padding: calc(var(--space) * 3); }
+header { margin-block-end: calc(var(--space) * 3); }
+h1 { font-size: 22px; line-height: 1.3; margin: var(--space) 0; }
+h2 { font-size: 14px; margin: 0 0 calc(var(--space) * 2); }
+p { margin: var(--space) 0; overflow-wrap: anywhere; }
+.eyebrow { font-size: 11px; letter-spacing: 0.08em; font-weight: 600; }
+.connection { border: 1px solid GrayText; border-radius: var(--space); padding: calc(var(--space) * 2); }
+#status { font-weight: 650; }
+dl { margin: calc(var(--space) * 2) 0; font-size: 12px; }
+dl div { display: flex; justify-content: space-between; gap: var(--space); margin-block: var(--space); }
+dd { margin: 0; text-align: end; overflow-wrap: anywhere; }
+form { margin-block-start: calc(var(--space) * 3); }
+label { display: block; font-weight: 600; margin-block: calc(var(--space) * 2) var(--space); }
+input, button { font: inherit; min-block-size: 44px; border-radius: 4px; inline-size: 100%; }
+input { padding: var(--space); border: 1px solid GrayText; color: CanvasText; background: Canvas; }
+button { padding: var(--space) calc(var(--space) * 2); cursor: pointer; border: 1px solid ButtonText; background: ButtonFace; color: ButtonText; font-weight: 600; }
+button:hover:enabled { outline: 1px solid ButtonText; }
+button:active:enabled { transform: translateY(1px); }
+button:disabled { cursor: default; color: GrayText; border-color: GrayText; }
+:focus-visible { outline: 3px solid Highlight; outline-offset: 3px; }
+#save { margin-block-start: var(--space); }
+.hint, footer, #feedback, #error { font-size: 12px; }
+#error { border-inline-start: 3px solid CanvasText; padding-inline-start: var(--space); }
+footer { margin-block-start: calc(var(--space) * 3); border-block-start: 1px solid GrayText; padding-block-start: var(--space); }
+[hidden] { display: none; }
