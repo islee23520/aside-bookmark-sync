@@ -26,8 +26,18 @@ let paired = false;
 let busy = false;
 let initialized = false;
 let renderedView: ReturnType<typeof stateView> | undefined;
+let renderedViewKey: string | undefined;
+let refreshRunning = false;
+let refreshPending = false;
+
+function viewKey(view: ReturnType<typeof stateView>): string {
+  return JSON.stringify(view);
+}
 
 function render(view: ReturnType<typeof stateView>): void {
+  const key = viewKey(view);
+  if (key === renderedViewKey) return;
+  renderedViewKey = key;
   renderedView = view;
   paired = view.paired;
   if (!initialized) {
@@ -40,28 +50,67 @@ function render(view: ReturnType<typeof stateView>): void {
     : "두 브라우저에서 같은 암호를 입력하세요. 원문 암호는 저장하거나 전송하지 않습니다.";
   const phase = view.status.phase;
   switch (phase) {
-    case "unpaired": status.textContent = "설정 필요"; break;
-    case "ready": status.textContent = "연결 준비됨"; break;
-    case "syncing": status.textContent = "동기화 중…"; break;
-    case "synced": status.textContent = "동기화 완료"; break;
-    case "error": status.textContent = "연결 확인 필요 · 자동 재시도 예정"; break;
-    default: assertNever(phase);
+    case "unpaired":
+      status.textContent = "설정 필요";
+      break;
+    case "ready":
+      status.textContent = "연결 준비됨";
+      break;
+    case "syncing":
+      status.textContent = "동기화 중…";
+      break;
+    case "synced":
+      status.textContent = "동기화 완료";
+      break;
+    case "error":
+      status.textContent = "연결 확인 필요 · 자동 재시도 예정";
+      break;
+    default:
+      assertNever(phase);
   }
-  lastSync.textContent = view.status.lastSyncAt === null ? "아직 없음"
-    : new Date(view.status.lastSyncAt).toLocaleString("ko-KR");
+  lastSync.textContent =
+    view.status.lastSyncAt === null
+      ? "아직 없음"
+      : new Date(view.status.lastSyncAt).toLocaleString("ko-KR");
   count.textContent = String(view.count);
   revision.textContent = String(view.revision);
   error.hidden = view.status.error === null;
-  error.textContent = view.status.error === null ? "" : `최근 오류: ${view.status.error}. 동반 프로세스와 설정을 확인하세요.`;
+  error.textContent =
+    view.status.error === null
+      ? ""
+      : `최근 오류: ${view.status.error}. 동반 프로세스와 설정을 확인하세요.`;
   sync.disabled = busy || !paired || phase === "syncing";
 }
 
 async function request(message: unknown): Promise<void> {
   const reply = replySchema.parse(await chrome.runtime.sendMessage(message));
   switch (reply.ok) {
-    case true: render(reply.view); break;
-    case false: throw new ProtocolError(400, reply.error);
-    default: assertNever(reply);
+    case true:
+      render(reply.view);
+      break;
+    case false:
+      throw new ProtocolError(400, reply.error);
+    default:
+      assertNever(reply);
+  }
+}
+
+async function refreshStatus(): Promise<void> {
+  if (refreshRunning) {
+    refreshPending = true;
+    return;
+  }
+  refreshRunning = true;
+  try {
+    do {
+      refreshPending = false;
+      await request({ type: "status" });
+    } while (refreshPending);
+  } catch (failure) {
+    if (!(failure instanceof Error)) throw failure;
+    feedback.textContent = "상태를 읽지 못했습니다. 팝업을 다시 열어 주세요.";
+  } finally {
+    refreshRunning = false;
   }
 }
 
@@ -96,13 +145,12 @@ form.addEventListener("submit", (event) => {
     await request({ type: "configure", label: clientLabel, credentials: await derivation });
   });
 });
-sync.addEventListener("click", () => { void run(() => request({ type: "sync" })); });
+sync.addEventListener("click", () => {
+  void run(() => request({ type: "sync" }));
+});
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && "state" in changes) {
-    void request({ type: "status" }).catch((failure: unknown) => {
-      if (!(failure instanceof Error)) throw failure;
-      feedback.textContent = "상태를 읽지 못했습니다. 팝업을 다시 열어 주세요.";
-    });
+    void refreshStatus();
   }
 });
-void run(() => request({ type: "status" }));
+void refreshStatus();
