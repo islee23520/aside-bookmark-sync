@@ -13,12 +13,13 @@
 }
 html,
 body {
+  inline-size: 360px;
+  min-inline-size: 360px;
+  max-inline-size: 360px;
   block-size: 600px;
 }
 body {
   margin: 0;
-  inline-size: 360px;
-  max-inline-size: 100vw;
   overflow: hidden;
 }
 main {
