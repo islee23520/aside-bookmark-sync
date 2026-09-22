@@ -13,6 +13,9 @@
 }
 html,
 body {
+  width: 360px;
+  min-width: 360px;
+  max-width: 360px;
   inline-size: 360px;
   min-inline-size: 360px;
   max-inline-size: 360px;
