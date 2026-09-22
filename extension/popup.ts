@@ -1,6 +1,6 @@
 import { deriveCredentials } from "./crypto";
 import { assertNever, ProtocolError } from "./protocol";
-import { replySchema, type stateView } from "./storage";
+import { replySchema, type stateView, stateViewFromStored } from "./storage";
 
 function element<T extends HTMLElement>(selector: string, type: new () => T): T {
   const node = document.querySelector(selector);
@@ -27,11 +27,9 @@ let busy = false;
 let initialized = false;
 let renderedView: ReturnType<typeof stateView> | undefined;
 let renderedViewKey: string | undefined;
-let refreshRunning = false;
-let refreshPending = false;
 
 function viewKey(view: ReturnType<typeof stateView>): string {
-  return JSON.stringify(view);
+  return JSON.stringify([view, busy]);
 }
 
 function render(view: ReturnType<typeof stateView>): void {
@@ -95,23 +93,9 @@ async function request(message: unknown): Promise<void> {
   }
 }
 
-async function refreshStatus(): Promise<void> {
-  if (refreshRunning) {
-    refreshPending = true;
-    return;
-  }
-  refreshRunning = true;
-  try {
-    do {
-      refreshPending = false;
-      await request({ type: "status" });
-    } while (refreshPending);
-  } catch (failure) {
-    if (!(failure instanceof Error)) throw failure;
-    feedback.textContent = "상태를 읽지 못했습니다. 팝업을 다시 열어 주세요.";
-  } finally {
-    refreshRunning = false;
-  }
+function changedValue(change: unknown): unknown {
+  if (typeof change !== "object" || change === null || !("newValue" in change)) return undefined;
+  return change.newValue;
 }
 
 async function run(action: () => Promise<void>): Promise<void> {
@@ -150,7 +134,15 @@ sync.addEventListener("click", () => {
 });
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && "state" in changes) {
-    void refreshStatus();
+    try {
+      render(stateViewFromStored(changedValue(changes["state"])));
+    } catch (failure) {
+      if (!(failure instanceof Error)) throw failure;
+      feedback.textContent = "상태를 읽지 못했습니다. 팝업을 다시 열어 주세요.";
+    }
   }
 });
-void refreshStatus();
+void request({ type: "status" }).catch((failure: unknown) => {
+  if (!(failure instanceof Error)) throw failure;
+  feedback.textContent = "상태를 읽지 못했습니다. 팝업을 다시 열어 주세요.";
+});
