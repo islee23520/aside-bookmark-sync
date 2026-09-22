@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build:extension": "bun build extension/service-worker.ts extension/popup.ts --outdir extension/dist --target browser",
+    "package:extension": "bun run build:extension && bash scripts/package-extension.sh",
     "companion": "bun run companion/main.ts",
     "typecheck": "tsc --noEmit",
     "check": "biome check companion src/shared package.json tsconfig.json biome.json"
