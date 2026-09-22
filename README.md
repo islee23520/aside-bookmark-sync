@@ -13,7 +13,7 @@ There is no cloud, no external server, and no browser-account sync. Traffic neve
 - Background retry about every 30 seconds while the extension is loaded.
 - Last-write-wins merge by change time. Ties break on `sourceClientId`.
 - macOS LaunchAgent so the companion starts at login and restarts after a crash.
-- Two global command names: `aside-bookmar-companion` and `aside-bookmark-companion`.
+- One global command: `aside-bookmark-companion`.
 
 ## Architecture
 
@@ -99,19 +99,11 @@ From the repository root:
 bun install -g "$PWD"
 ```
 
-That publishes both binaries from `package.json`:
+That publishes the `aside-bookmark-companion` binary from `package.json`.
 
-| Command | Target |
-| --- | --- |
-| `aside-bookmar-companion` | `companion/cli.ts` |
-| `aside-bookmark-companion` | `companion/cli.ts` |
-
-They are the same program. Use either name.
-
-Confirm the commands resolve:
+Confirm the command resolves:
 
 ```bash
-aside-bookmar-companion --help
 aside-bookmark-companion --help
 ```
 
@@ -132,8 +124,8 @@ You should have `extension/dist/service-worker.js` and `extension/dist/popup.js`
 ### 4. Install and start the LaunchAgent
 
 ```bash
-aside-bookmar-companion --json doctor
-aside-bookmar-companion install
+aside-bookmark-companion --json doctor
+aside-bookmark-companion install
 ```
 
 `install` is idempotent. It writes `~/Library/LaunchAgents/com.islee23520.aside-bookmark-companion.plist`, enables the job in the current user's `gui/<uid>` domain, bootstraps it, and starts the companion at login.
@@ -169,7 +161,7 @@ The popup never refills the password. The plaintext password is not stored.
 ```bash
 aside-bookmark-companion --json status
 curl -sS http://127.0.0.1:32145/health
-aside-bookmar-companion logs
+aside-bookmark-companion logs
 ```
 
 Expect:
@@ -185,7 +177,6 @@ Then add a bookmark in one browser and confirm it appears in the other. Rename o
 ## CLI
 
 ```text
-aside-bookmar-companion [--json] <command>
 aside-bookmark-companion [--json] <command>
 ```
 
@@ -205,7 +196,7 @@ aside-bookmark-companion [--json] <command>
 Unknown commands:
 
 ```bash
-aside-bookmar-companion --json not-a-command
+aside-bookmark-companion --json not-a-command
 ```
 
 Exits 1 with `error.code` `unknown_command`.
@@ -236,7 +227,7 @@ Optional override: `ASIDE_BOOKMARK_SYNC_STATE_DIR=/path/to/empty-dir`. Default i
 ## Uninstall
 
 ```bash
-aside-bookmar-companion uninstall
+aside-bookmark-companion uninstall
 ```
 
 Then:

@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "bin": {
-    "aside-bookmar-companion": "companion/cli.ts",
     "aside-bookmark-companion": "companion/cli.ts"
   },
   "scripts": {

@@ -14,8 +14,7 @@ const commandSchema = z.enum([
   "uninstall",
 ]);
 
-const help = `Usage: aside-bookmar-companion [--json] <command>
-Alias: aside-bookmark-companion
+const help = `Usage: aside-bookmark-companion [--json] <command>
 
 Commands:
   doctor       Check platform, Bun, companion paths, and LaunchAgent status
